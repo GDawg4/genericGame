@@ -1,5 +1,5 @@
 package Elements
 
-data class Tower (val isAlive:Boolean = false){
+data class Tower (var isAlive:Boolean = false){
 
 }
