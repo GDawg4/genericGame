@@ -32,11 +32,23 @@ fun createHeroes():ArrayList<Hero>{
     return availableHero
 }
 
+
 fun main(args: Array<String>) {
     val match = Match(NarratorDeutsch())
-    val heroes = createHeroes()
+    match.availableHeroesDire = createHeroes()
+    match.availableHeroesRadiant = createHeroes()
 
-    heroes.forEach {
-        println(it)
+    println(match.narrate(1))
+    println(match.narrate(2))
+
+    for (i in 1..10){
+        println(match.narrate(20))
+        println(match.availableHeroes())
+        println(match.narrate(24))
+        val chosenHero = readLine()!!
+        println(match.selectHero(chosenHero.toInt()))
+        match.teamSelecting = !match.teamSelecting
     }
+    println(match.radiant.heroes)
+    println(match.dire.heroes)
 }

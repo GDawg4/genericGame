@@ -5,37 +5,51 @@ import voicePacks.Narrator
 class Match <T>(
         val narrator: T,
         val radiant: Team = Team(),
-        val dire:Team = Team()) where T: Narrator{
+        val dire:Team = Team(),
+        var teamSelecting: Boolean = true,
+        var availableHeroesRadiant:ArrayList<Hero> = ArrayList(),
+        var availableHeroesDire: ArrayList<Hero> = ArrayList()) where T: Narrator{
 
     fun narrate(event: Int):String? {
+        if (event == 20){
+            when(teamSelecting){
+                true -> return this.narrator.narrate(21)
+                false -> return this.narrator.narrate(22)
+            }
+        }
         return this.narrator.narrate(event)
     }
 
-    fun heroesOptions():String{
-        return """
-            1. TINY
-            2. KUNKKA
-            3. PANGOLIER
-            4. SLARK
-            5. STORM SPIRIT
-            6. INVOKER
-            7. NIGHT STALKER
-            8. DOOM
-            9. TERRORBLADE
-            10.EMBER SPIRIT
-            11.NECROPHOS
-            12.WITCH DOCTOR
-            13.LYCAN
-            14.SAND KING
-            15.URSA
-            16.BLOODSEEKER
-            17.ENCHANTRESS
-            18.CHEN
-            19.ABADDON
-            20.DAZZLE
-        """.trimIndent()
+    fun availableHeroes():String?{
+        var finalString = ""
+        var counter = 1
+        if (teamSelecting){
+            availableHeroesRadiant.forEach {
+                finalString += "$counter. $it \n"
+                counter ++
+            }
+            return  finalString
+        }
+        else{
+            availableHeroesDire.forEach {
+                finalString += "$counter. $it \n"
+                counter ++
+            }
+            return finalString
+        }
     }
-    fun heroesSelection():String?{
-        return null
+
+    fun selectHero(place:Int):String?{
+        var correctedPlace = place - 1
+        if(teamSelecting){
+            radiant.heroes.add(availableHeroesRadiant[correctedPlace])
+            availableHeroesRadiant.removeAt(correctedPlace)
+            return "${radiant.heroes.first().name} ${this.narrate(23)}"
+        }
+        else{
+            dire.heroes.add(availableHeroesDire[correctedPlace])
+            availableHeroesDire.removeAt(correctedPlace)
+            return "${radiant.heroes.first().name} ${this.narrate(23)}"
+        }
     }
 }
