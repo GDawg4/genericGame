@@ -1,6 +1,5 @@
 import Elements.Hero
 import Elements.Match
-import Elements.Team
 import voicePacks.NarratorDeutsch
 import voicePacks.NarratorSpanish
 
