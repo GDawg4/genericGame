@@ -57,7 +57,7 @@ fun menu(typeOfMenu:Int):String{
 
 fun main(args: Array<String>) {
     //se crea la partida, con el cometarista incluído
-    val match = Match(NarratorSpanish())
+    val match = Match(NarratorDeutsch())
 
     //se crean los héroes que pueden ser elegidos
     match.loadHeroes(createHeroes())
