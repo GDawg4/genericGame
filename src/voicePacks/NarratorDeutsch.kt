@@ -2,6 +2,7 @@ package voicePacks
 
 class NarratorDeutsch:Narrator {
 
+    //verschiedene Aktionen, verschiedene Strings
     override fun narrate(action: Int):String?{
         when(action){
             1 -> return "GUTEN MORGEN\n"

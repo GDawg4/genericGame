@@ -4,7 +4,9 @@ import Elements.Team
 import voicePacks.NarratorDeutsch
 import voicePacks.NarratorSpanish
 
+//función para crear los héroes
 fun createHeroes():ArrayList<Hero>{
+    //se crea una lista vacía, se crean todas las instancias de héroe y se agregan a la lista
     var availableHero: ArrayList<Hero> = ArrayList()
     var strength = "Strength"
     var agility = "Agility"
@@ -33,6 +35,7 @@ fun createHeroes():ArrayList<Hero>{
     return availableHero
 }
 
+//función que contiene los dos tipos de menú
 fun menu(typeOfMenu:Int):String{
     when(typeOfMenu){
         1 ->{
@@ -52,108 +55,118 @@ fun menu(typeOfMenu:Int):String{
     return ""
 }
 
+
 fun main(args: Array<String>) {
+    //se crea la partida, con el cometarista incluído
     val match = Match(NarratorSpanish())
-    /*
+
+    //se crean los héroes que pueden ser elegidos
     match.loadHeroes(createHeroes())
 
-    println(match.narrate(1))
-    println(match.narrate(2))
-
+    println(match.welcome())
+    println(match.begin())
+    //para seleccionar los equipos
     for (i in 1..10){
-        println(match.narrate(20))
+        //se imprime qué equipo elige actualmente
+        println(match.teamIsUp())
+        //se imprie lista de héroes disponibles
         println(match.availableHeroes())
-        println(match.narrate(24))
+        //se incita a elegir
+        println(match.choose())
         val chosenHero = readLine()!!
+        //se selecciona elhéroe arpopiado
         println(match.selectHero(chosenHero.toInt()))
     }
-    println(match.narrate(25))
-    */
+    println(match.matchStart())
 
     do {
         var gameIsOn = true
+        //se revisa si un Ancient puede ser eliminado y se imprime acorde
         println(menu(if (match.canGameBeEnded()){
             2
         }else {
             1
         }))
+        //se pregunta sobre el evento ocurrido
         println("Qué ocurrió?")
         var event = readLine()!!
         when(event){
+            //muerte de héroes
             "1" ->{
+                //se pregunta qué equipo mató
                 println("Mató Radiant?")
                 var killer = readLine()!!.toLowerCase()
 
                 println("Cuántas muertes? (1-5) ")
                 var numberOfKills = readLine()!!.toInt()
 
-                if(killer == "si"){
-                    if (numberOfKills == 1){
-                        println("${match.narrate(3)} RADIANT")
+                //se imprime el mensaje acorde
+                when(killer){
+                    "si" -> {
+                        when {
+                            (numberOfKills == 1)-> println(match.oneKill(true))
+                            ((5 >= numberOfKills) and (numberOfKills > 1)) -> println(match.moreKills(true))
+                            else -> println(match.wrongInput())
+                        }
                     }
-                    else if ((5 >= numberOfKills) and (numberOfKills > 1)){
-                        println("${match.narrate(4)} RADIANT")
+                    "no" -> {
+                        when {
+                            (numberOfKills == 1) -> println(match.oneKill(false))
+                            ((5 >= numberOfKills) and (numberOfKills > 1)) -> println(match.moreKills(false))
+                            else -> println(match.wrongInput())
+                        }
                     }
-                    else{
-                        println(match.narrate(41))
+                    else ->{
+                        println(match.wrongInput())
                     }
-                }else if (killer == "no"){
-                    if (numberOfKills == 1){
-                        println("${match.narrate(3)} DIRE")
-                    }
-                    else if ((5 >= numberOfKills) and (numberOfKills > 1)){
-                        println("${match.narrate(4)} DIRE")
-                    }
-                    else{
-                        println(match.narrate(41))
-                    }
-                }else{
-                    println(match.narrate(41))
                 }
             }
+
+            //destrucción de torres
             "2" ->{
+                //se pregunta quién mató
                 println("Mató Radiant?")
                 var towerKiller = readLine()!!.toLowerCase()
+                //se imprime acorde
                 when(towerKiller){
                     "si" -> {
-                        if (match.killDireTower()){
-                            println(match.narrate(6))
-                        }else{
-                            println(match.narrate(61))
-                        }
+                        match.killTower(true)
                     }
                     "no" ->{
-                        if (match.killRadiantTower()){
-                            println(match.narrate(6))
-                        }else{
-                            println(match.narrate(61))
-                        }
+                        match.killTower(false)
                     }
                 }
             }
+
+            //para fin de juego
             "3" ->{
+                // si el juego puede ser terminado
                 if (match.canGameBeEnded()){
+                    //se revisa si solo un equipo puede ganar
+                    //en ese caso, gana automáticamente ese equipo
                     when {
-                        (match.isRadiantKillable() and !match.isDireKillable()) -> println(match.narrate(8))
-                        (!match.isRadiantKillable() and match.isDireKillable()) -> println(match.narrate(7))
+                        (match.isRadiantKillable() and !match.isDireKillable()) -> println(match.direWins())
+                        (!match.isRadiantKillable() and match.isDireKillable()) -> println(match.radiantWins())
+                        //de lo contrario, se pregunta quién ganó
                         else -> {
                             println("Mató Radiant?")
                             var winner = readLine()!!.toLowerCase()
                             when(winner){
-                                "si" -> println(7)
-                                "no" -> println(8)
+                                "si" -> match.radiantWins()
+                                "no" -> match.direWins()
                             }
                         }
                     }
+                    //en cualquier caso, se termina el juego
                     gameIsOn = false
                 }else{
-                    println(match.narrate(41))
+                    println(match.wrongInput())
                 }
             }
+            //mensaje de ingreso incorrecto
             else -> {
-                println(match.narrate(41))
+                println(match.wrongInput())
             }
         }
     }while (gameIsOn)
-
 }

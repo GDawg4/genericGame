@@ -2,6 +2,7 @@ package voicePacks
 
 class NarratorSpanish:Narrator{
 
+    //diferentes acciones, diferentes Strings
     override fun narrate(action: Int):String?{
         when(action){
             1 -> return "BIENVENIDOS AL JUEGO\n"
