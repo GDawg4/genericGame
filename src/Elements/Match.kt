@@ -3,12 +3,16 @@ package Elements
 import voicePacks.Narrator
 
 class Match <T>(
-        val narrator: T,
-        val radiant: Team = Team(),
-        val dire:Team = Team(),
-        var teamSelecting: Boolean = true,
-        var availableHeroesRadiant:ArrayList<Hero> = ArrayList(),
-        var availableHeroesDire: ArrayList<Hero> = ArrayList()) where T: Narrator{
+        private val narrator: T,
+        private val radiant: Team = Team(),
+        private val dire:Team = Team(),
+        private var teamSelecting: Boolean = true,
+        private var availableHeroes:ArrayList<Hero> = ArrayList()
+        ) where T: Narrator{
+
+    fun loadHeroes(heroes:ArrayList<Hero>){
+        this.availableHeroes = heroes
+    }
 
     fun narrate(event: Int):String? {
         if (event == 20){
@@ -23,33 +27,71 @@ class Match <T>(
     fun availableHeroes():String?{
         var finalString = ""
         var counter = 1
-        if (teamSelecting){
-            availableHeroesRadiant.forEach {
-                finalString += "$counter. $it \n"
-                counter ++
-            }
-            return  finalString
+        availableHeroes.forEach {
+            finalString += "$counter. $it \n"
+            counter++
         }
-        else{
-            availableHeroesDire.forEach {
-                finalString += "$counter. $it \n"
-                counter ++
-            }
-            return finalString
-        }
+        return finalString
     }
 
     fun selectHero(place:Int):String?{
         var correctedPlace = place - 1
         if(teamSelecting){
-            radiant.heroes.add(availableHeroesRadiant[correctedPlace])
-            availableHeroesRadiant.removeAt(correctedPlace)
-            return "${radiant.heroes.first().name} ${this.narrate(23)}"
+            radiant.heroes.add(availableHeroes[correctedPlace])
+            availableHeroes.removeAt(correctedPlace)
+            this.teamSelecting = !this.teamSelecting
+            return "${radiant.heroes.last().name} ${this.narrate(23)}"
         }
         else{
-            dire.heroes.add(availableHeroesDire[correctedPlace])
-            availableHeroesDire.removeAt(correctedPlace)
-            return "${radiant.heroes.first().name} ${this.narrate(23)}"
+            dire.heroes.add(availableHeroes[correctedPlace])
+            availableHeroes.removeAt(correctedPlace)
+            this.teamSelecting = !this.teamSelecting
+            return "${dire.heroes.last().name} ${this.narrate(23)}"
         }
+    }
+
+    fun isRadiantKillable():Boolean{
+        if(this.radiant.numberOfTowers() == 0){
+            return true
+        }
+        return false
+    }
+
+    fun isDireKillable():Boolean{
+        if(this.dire.numberOfTowers() == 0){
+            return true
+        }
+        return false
+    }
+
+    fun killRadiantTower():Boolean{
+        radiant.towers.forEach {
+            println("ded")
+            if (it.isAlive){
+                it.isAlive = false
+                println("ded")
+                return true
+            }
+        }
+        return false
+    }
+
+    fun killDireTower():Boolean{
+        dire.towers.forEach {
+            println("ded")
+            if (it.isAlive){
+                it.isAlive = false
+                println("ded")
+                return true
+            }
+        }
+        return false
+    }
+
+    fun canGameBeEnded():Boolean{
+        if(isRadiantKillable() or isDireKillable()){
+            return true
+        }
+        return false
     }
 }

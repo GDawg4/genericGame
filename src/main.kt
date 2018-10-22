@@ -2,6 +2,7 @@ import Elements.Hero
 import Elements.Match
 import Elements.Team
 import voicePacks.NarratorDeutsch
+import voicePacks.NarratorSpanish
 
 fun createHeroes():ArrayList<Hero>{
     var availableHero: ArrayList<Hero> = ArrayList()
@@ -32,11 +33,29 @@ fun createHeroes():ArrayList<Hero>{
     return availableHero
 }
 
+fun menu(typeOfMenu:Int):String{
+    when(typeOfMenu){
+        1 ->{
+            return """
+        1. Ocurrieron muertes
+        2. Matan torres
+    """.trimIndent()
+        }
+        2 ->{
+            return """
+        1. Ocurrieron muertes
+        2. Matan torres
+        3. Matan Ancient
+    """.trimIndent()
+        }
+    }
+    return ""
+}
 
 fun main(args: Array<String>) {
-    val match = Match(NarratorDeutsch())
-    match.availableHeroesDire = createHeroes()
-    match.availableHeroesRadiant = createHeroes()
+    val match = Match(NarratorSpanish())
+    /*
+    match.loadHeroes(createHeroes())
 
     println(match.narrate(1))
     println(match.narrate(2))
@@ -47,8 +66,94 @@ fun main(args: Array<String>) {
         println(match.narrate(24))
         val chosenHero = readLine()!!
         println(match.selectHero(chosenHero.toInt()))
-        match.teamSelecting = !match.teamSelecting
     }
-    println(match.radiant.heroes)
-    println(match.dire.heroes)
+    println(match.narrate(25))
+    */
+
+    do {
+        var gameIsOn = true
+        println(menu(if (match.canGameBeEnded()){
+            2
+        }else {
+            1
+        }))
+        println("Qué ocurrió?")
+        var event = readLine()!!
+        when(event){
+            "1" ->{
+                println("Mató Radiant?")
+                var killer = readLine()!!.toLowerCase()
+
+                println("Cuántas muertes? (1-5) ")
+                var numberOfKills = readLine()!!.toInt()
+
+                if(killer == "si"){
+                    if (numberOfKills == 1){
+                        println("${match.narrate(3)} RADIANT")
+                    }
+                    else if ((5 >= numberOfKills) and (numberOfKills > 1)){
+                        println("${match.narrate(4)} RADIANT")
+                    }
+                    else{
+                        println(match.narrate(41))
+                    }
+                }else if (killer == "no"){
+                    if (numberOfKills == 1){
+                        println("${match.narrate(3)} DIRE")
+                    }
+                    else if ((5 >= numberOfKills) and (numberOfKills > 1)){
+                        println("${match.narrate(4)} DIRE")
+                    }
+                    else{
+                        println(match.narrate(41))
+                    }
+                }else{
+                    println(match.narrate(41))
+                }
+            }
+            "2" ->{
+                println("Mató Radiant?")
+                var towerKiller = readLine()!!.toLowerCase()
+                when(towerKiller){
+                    "si" -> {
+                        if (match.killDireTower()){
+                            println(match.narrate(6))
+                        }else{
+                            println(match.narrate(61))
+                        }
+                    }
+                    "no" ->{
+                        if (match.killRadiantTower()){
+                            println(match.narrate(6))
+                        }else{
+                            println(match.narrate(61))
+                        }
+                    }
+                }
+            }
+            "3" ->{
+                if (match.canGameBeEnded()){
+                    when {
+                        (match.isRadiantKillable() and !match.isDireKillable()) -> println(match.narrate(8))
+                        (!match.isRadiantKillable() and match.isDireKillable()) -> println(match.narrate(7))
+                        else -> {
+                            println("Mató Radiant?")
+                            var winner = readLine()!!.toLowerCase()
+                            when(winner){
+                                "si" -> println(7)
+                                "no" -> println(8)
+                            }
+                        }
+                    }
+                    gameIsOn = false
+                }else{
+                    println(match.narrate(41))
+                }
+            }
+            else -> {
+                println(match.narrate(41))
+            }
+        }
+    }while (gameIsOn)
+
 }
